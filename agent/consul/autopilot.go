@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 
+	"math"
+
 	"github.com/armon/go-metrics"
 	"github.com/armon/go-metrics/prometheus"
 	"github.com/hashicorp/raft"
 	autopilot "github.com/hashicorp/raft-autopilot"
 	"github.com/hashicorp/serf/serf"
-	"math"
 
 	"github.com/hashicorp/consul/agent/metadata"
 	"github.com/hashicorp/consul/agent/structs"
+	"github.com/hashicorp/consul/lib"
 	"github.com/hashicorp/consul/types"
 )
 
@@ -33,7 +35,7 @@ type AutopilotDelegate struct {
 }
 
 func (d *AutopilotDelegate) AutopilotConfig() *autopilot.Config {
-	return d.server.getOrCreateAutopilotConfig().ToAutopilotLibraryConfig()
+	return d.server.getAutopilotConfigOrDefault().ToAutopilotLibraryConfig()
 }
 
 func (d *AutopilotDelegate) KnownServers() map[raft.ServerID]*autopilot.Server {
@@ -84,7 +86,11 @@ func (s *Server) initAutopilot(config *Config) {
 		autopilot.WithReconcileInterval(config.AutopilotInterval),
 		autopilot.WithUpdateInterval(config.ServerHealthInterval),
 		autopilot.WithPromoter(s.autopilotPromoter()),
+		autopilot.WithReconciliationDisabled(),
 	)
+
+	// start autopilot.
+	s.autopilot.Start(&lib.StopChannelContext{StopCh: s.shutdownCh})
 
 	metrics.SetGauge([]string{"autopilot", "healthy"}, float32(math.NaN()))
 	metrics.SetGauge([]string{"autopilot", "failure_tolerance"}, float32(math.NaN()))

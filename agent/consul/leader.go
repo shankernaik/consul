@@ -296,7 +296,7 @@ func (s *Server) establishLeadership(ctx context.Context) error {
 	}
 
 	s.getOrCreateAutopilotConfig()
-	s.autopilot.Start(ctx)
+	s.autopilot.EnableReconciliation()
 
 	s.startConfigReplication(ctx)
 
@@ -349,9 +349,7 @@ func (s *Server) revokeLeadership() {
 
 	s.resetConsistentReadReady()
 
-	// Stop returns a chan and we want to block until it is closed
-	// which indicates that autopilot is actually stopped.
-	<-s.autopilot.Stop()
+	s.autopilot.DisableReconciliation()
 }
 
 // initializeACLs is used to setup the ACLs if we are the leader
@@ -801,6 +799,25 @@ func (s *Server) getOrCreateAutopilotConfig() *structs.AutopilotConfig {
 	}
 
 	return config
+}
+
+func (s *Server) getAutopilotConfigOrDefault() *structs.AutopilotConfig {
+	logger := s.loggers.Named(logging.Autopilot)
+	state := s.fsm.State()
+	_, config, err := state.AutopilotConfig()
+	if err != nil {
+		logger.Error("failed to get config", "error", err)
+		return nil
+	}
+
+	if config != nil {
+		return config
+	}
+
+	// autopilot may start running prior to there ever being a leader
+	// and having an autopilot configuration created. In that case
+	// use the one from the local configuration for now.
+	return s.config.AutopilotConfig
 }
 
 func (s *Server) bootstrapConfigEntries(entries []structs.ConfigEntry) error {
