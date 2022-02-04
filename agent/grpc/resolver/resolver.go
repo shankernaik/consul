@@ -85,7 +85,7 @@ func (s *ServerResolverBuilder) ServerForGlobalAddr(globalAddr string) (*metadat
 
 // Build returns a new serverResolver for the given ClientConn. The resolver
 // will keep the ClientConn's state updated based on updates from Serf.
-func (s *ServerResolverBuilder) Build(target resolver.Target, cc resolver.ClientConn, _ resolver.BuildOption) (resolver.Resolver, error) {
+func (s *ServerResolverBuilder) Build(target resolver.Target, cc resolver.ClientConn, _ resolver.BuildOptions) (resolver.Resolver, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -294,14 +294,14 @@ func (r *serverResolver) Close() {
 }
 
 // ResolveNow is not used
-func (*serverResolver) ResolveNow(resolver.ResolveNowOption) {}
+func (*serverResolver) ResolveNow(resolver.ResolveNowOptions) {}
 
 type leaderResolver struct {
 	globalAddr string
 	clientConn resolver.ClientConn
 }
 
-func (l leaderResolver) ResolveNow(resolver.ResolveNowOption) {}
+func (l leaderResolver) ResolveNow(resolver.ResolveNowOptions) {}
 
 func (l leaderResolver) Close() {}
 

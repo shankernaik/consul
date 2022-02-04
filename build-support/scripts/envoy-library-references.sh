@@ -41,7 +41,7 @@ cd _envoy_tmp
 
 git clone git@github.com:envoyproxy/go-control-plane
 cd go-control-plane
-git co -b consul-temp "${LIBRARY_VERSION}"
+git checkout -b consul-temp "${LIBRARY_VERSION}"
 
 IFS=$'\n' candidates=($(find . -name *.pb.go -a -type f | sed 's@/[^/]*\.pb\.go$@@' | sort -u))
 
@@ -67,4 +67,4 @@ mv -f "${OUTFILE}" ../../agent/xds
 )
 
 echo "updating vendored code..."
-make update-vendor
+go mod tidy

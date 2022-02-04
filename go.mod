@@ -15,15 +15,16 @@ require (
 	github.com/armon/go-metrics v0.3.10
 	github.com/armon/go-radix v1.0.0
 	github.com/aws/aws-sdk-go v1.42.34
+	github.com/cncf/udpa/go v0.0.0-20200629203442-efcf912fb354 // indirect
 	github.com/coredns/coredns v1.1.2
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/digitalocean/godo v1.10.0 // indirect
 	github.com/docker/go-connections v0.3.0
 	github.com/elazarl/go-bindata-assetfs v0.0.0-20160803192304-e1a2a7ec64b0
-	github.com/envoyproxy/go-control-plane v0.9.5
+	github.com/envoyproxy/go-control-plane v0.9.6
 	github.com/frankban/quicktest v1.11.0 // indirect
 	github.com/gogo/protobuf v1.3.2
-	github.com/golang/protobuf v1.3.5
+	github.com/golang/protobuf v1.4.2
 	github.com/google/go-cmp v0.5.6
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/gofuzz v1.2.0
@@ -93,7 +94,7 @@ require (
 	google.golang.org/api v0.9.0 // indirect
 	google.golang.org/appengine v1.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
-	google.golang.org/grpc v1.25.1
+	google.golang.org/grpc v1.27.0
 	gopkg.in/square/go-jose.v2 v2.5.1
 	gotest.tools/v3 v3.0.3
 	k8s.io/api v0.18.2
