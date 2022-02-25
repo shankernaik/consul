@@ -44,9 +44,6 @@ dc:
               This node has a failing serf node check. The health statuses shown on this page are the statuses as they were known before the node became unreachable.
             </p>
   services:
-    # show:
-      # upstreams:
-      #   intro: |
     index:
       empty:
         header: |
