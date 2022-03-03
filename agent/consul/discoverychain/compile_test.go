@@ -2422,6 +2422,7 @@ func testcase_RouterIgnored_ResolverProtocolOverride() compileTestCase {
 	expect := &structs.CompiledDiscoveryChain{
 		Protocol:  "tcp",
 		StartNode: "resolver:main.default.default.dc1",
+		Default:   true,
 		Nodes: map[string]*structs.DiscoveryGraphNode{
 			"resolver:main.default.default.dc1": {
 				Type: structs.DiscoveryGraphNodeTypeResolver,

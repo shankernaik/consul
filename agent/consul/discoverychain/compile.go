@@ -343,11 +343,39 @@ func (c *compiler) compile() (*structs.CompiledDiscoveryChain, error) {
 	}, nil
 }
 
+//	determineIfDefaultChain returns true if the compiled chain represents no
+//	routing, no splitting, and only the default resolution.  We have to be
+//	careful here to avoid returning "yep this is default" when the only
+//	resolver action being applied is redirection to another resolver that is
+//	default, so we double check the resolver matches the requested resolver.
+//
+// NOTE: "default chain" mostly means that this is compatible with how things
+// worked (roughly) in consul 1.5 pre-discovery chain, not that there are zero
+// config entries in play (like service-defaults).
 func (c *compiler) determineIfDefaultChain() bool {
-	// NOTE: "default chain" mostly means that this is compatible with how
-	// things worked (roughly) in consul 1.5 pre-discovery chain, not that
-	// there are zero config entries in play (like service-defaults).
-	return c.entries.IsChainEmpty()
+	if false {
+		return c.entries.IsChainEmpty()
+	}
+
+	if c.startNode == "" || len(c.nodes) == 0 {
+		return true
+	}
+
+	node := c.nodes[c.startNode]
+	if node == nil {
+		panic("not possible: missing node named '" + c.startNode + "' in chain '" + c.serviceName + "'")
+	}
+
+	if node.Type != structs.DiscoveryGraphNodeTypeResolver {
+		return false
+	}
+	if !node.Resolver.Default {
+		return false
+	}
+
+	target := c.loadedTargets[node.Resolver.Target]
+
+	return target.Service == c.serviceName && target.Namespace == c.evaluateInNamespace && target.Partition == c.evaluateInPartition
 }
 
 func (c *compiler) detectCircularReferences() error {
