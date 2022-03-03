@@ -99,6 +99,7 @@ func TestDiscoveryChainEndpoint_Get(t *testing.T) {
 			Partition:   "default",
 			Datacenter:  "dc1",
 			Protocol:    "tcp",
+			Default:     true,
 			StartNode:   "resolver:web.default.default.dc1",
 			Nodes: map[string]*structs.DiscoveryGraphNode{
 				"resolver:web.default.default.dc1": {
