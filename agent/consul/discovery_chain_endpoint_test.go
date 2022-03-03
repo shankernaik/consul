@@ -298,7 +298,7 @@ func TestDiscoveryChainEndpoint_Get_BlockOnNoChange(t *testing.T) {
 				if err != nil {
 					return fmt.Errorf("error getting discovery chain: %w", err)
 				}
-				if !out.Chain.IsDefault() {
+				if !out.Chain.Default {
 					return fmt.Errorf("expected default chain")
 				}
 

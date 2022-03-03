@@ -161,6 +161,18 @@ type compiler struct {
 	// This is an OUTPUT field.
 	protocol string
 
+	// chainProtocol is the value of the protocol field BEFORE factoring in the
+	// protocol overrides.
+	//
+	// This is an OUTPUT field.
+	chainProtocol string
+
+	// serviceMeta is the Meta field from the service-defaults entry that
+	// shares a name with this discovery chain.
+	//
+	// This is an OUTPUT field.
+	serviceMeta map[string]string
+
 	// startNode is computed inside of assembleChain()
 	//
 	// This is an OUTPUT field.
@@ -291,6 +303,7 @@ func (c *compiler) compile() (*structs.CompiledDiscoveryChain, error) {
 		}
 	}
 
+	c.chainProtocol = c.protocol
 	if c.overrideProtocol != "" {
 		if c.overrideProtocol != c.protocol {
 			c.protocol = c.overrideProtocol
@@ -327,12 +340,28 @@ func (c *compiler) compile() (*structs.CompiledDiscoveryChain, error) {
 		Namespace:         c.evaluateInNamespace,
 		Partition:         c.evaluateInPartition,
 		Datacenter:        c.evaluateInDatacenter,
+		Default:           c.determineIfDefaultChain(),
 		CustomizationHash: customizationHash,
 		Protocol:          c.protocol,
+		ServiceMeta:       c.serviceMeta,
 		StartNode:         c.startNode,
 		Nodes:             c.nodes,
 		Targets:           c.loadedTargets,
 	}, nil
+}
+
+func (c *compiler) determineIfDefaultChain() bool {
+	if len(c.serviceMeta) > 0 {
+		// this can only come from service-defaults
+		return false
+	}
+
+	if c.chainProtocol != "tcp" {
+		// this can only come from service-defaults
+		return false
+	}
+
+	return c.entries.IsChainEmpty()
 }
 
 func (c *compiler) detectCircularReferences() error {
@@ -514,6 +543,11 @@ func (c *compiler) assembleChain() error {
 	}
 
 	sid := structs.NewServiceID(c.serviceName, c.GetEnterpriseMeta())
+
+	// Extract the service meta for the service named by this discovery chain.
+	if serviceDefault := c.entries.GetService(sid); serviceDefault != nil {
+		c.serviceMeta = serviceDefault.GetMeta()
+	}
 
 	// Check for short circuit path.
 	if len(c.resolvers) == 0 && c.entries.IsChainEmpty() {
