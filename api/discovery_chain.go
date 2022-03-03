@@ -109,8 +109,8 @@ type CompiledDiscoveryChain struct {
 	// non-customized versions.
 	CustomizationHash string
 
-	// Default indicates if this discovery chain is based on no config
-	// entries at all.
+	// Default indicates if this discovery chain is based on no
+	// service-resolver, service-splitter, or service-router config entries.
 	Default bool
 
 	// Protocol is the overall protocol shared by everything in the chain.

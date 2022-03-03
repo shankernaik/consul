@@ -26,8 +26,8 @@ type CompiledDiscoveryChain struct {
 	// non-customized versions.
 	CustomizationHash string `json:",omitempty"`
 
-	// Default indicates if this discovery chain is based on no config
-	// entries at all.
+	// Default indicates if this discovery chain is based on no
+	// service-resolver, service-splitter, or service-router config entries.
 	Default bool `json:",omitempty"`
 
 	// Protocol is the overall protocol shared by everything in the chain.

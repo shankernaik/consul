@@ -1465,6 +1465,7 @@ func testcase_DefaultResolver_WithProxyDefaults() compileTestCase {
 
 	expect := &structs.CompiledDiscoveryChain{
 		Protocol:  "grpc",
+		Default:   true,
 		StartNode: "resolver:main.default.default.dc1",
 		Nodes: map[string]*structs.DiscoveryGraphNode{
 			"resolver:main.default.default.dc1": {
@@ -1502,6 +1503,7 @@ func testcase_ServiceMetaProjection() compileTestCase {
 	)
 	expect := &structs.CompiledDiscoveryChain{
 		Protocol: "tcp",
+		Default:  true,
 		ServiceMeta: map[string]string{
 			"foo": "bar",
 			"abc": "123",
@@ -2347,6 +2349,7 @@ func testcase_ResolverProtocolOverride() compileTestCase {
 
 	expect := &structs.CompiledDiscoveryChain{
 		Protocol:  "http2",
+		Default:   true,
 		StartNode: "resolver:main.default.default.dc1",
 		Nodes: map[string]*structs.DiscoveryGraphNode{
 			"resolver:main.default.default.dc1": {
@@ -2380,6 +2383,7 @@ func testcase_ResolverProtocolOverrideIgnored() compileTestCase {
 
 	expect := &structs.CompiledDiscoveryChain{
 		Protocol:  "http2",
+		Default:   true,
 		StartNode: "resolver:main.default.default.dc1",
 		Nodes: map[string]*structs.DiscoveryGraphNode{
 			"resolver:main.default.default.dc1": {

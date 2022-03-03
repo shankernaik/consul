@@ -161,12 +161,6 @@ type compiler struct {
 	// This is an OUTPUT field.
 	protocol string
 
-	// chainProtocol is the value of the protocol field BEFORE factoring in the
-	// protocol overrides.
-	//
-	// This is an OUTPUT field.
-	chainProtocol string
-
 	// serviceMeta is the Meta field from the service-defaults entry that
 	// shares a name with this discovery chain.
 	//
@@ -303,7 +297,6 @@ func (c *compiler) compile() (*structs.CompiledDiscoveryChain, error) {
 		}
 	}
 
-	c.chainProtocol = c.protocol
 	if c.overrideProtocol != "" {
 		if c.overrideProtocol != c.protocol {
 			c.protocol = c.overrideProtocol
@@ -351,16 +344,9 @@ func (c *compiler) compile() (*structs.CompiledDiscoveryChain, error) {
 }
 
 func (c *compiler) determineIfDefaultChain() bool {
-	if len(c.serviceMeta) > 0 {
-		// this can only come from service-defaults
-		return false
-	}
-
-	if c.chainProtocol != "tcp" {
-		// this can only come from service-defaults
-		return false
-	}
-
+	// NOTE: "default chain" mostly means that this is compatible with how
+	// things worked (roughly) in consul 1.5 pre-discovery chain, not that
+	// there are zero config entries in play (like service-defaults).
 	return c.entries.IsChainEmpty()
 }
 
