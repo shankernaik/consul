@@ -36,6 +36,9 @@ type cmd struct {
 	tokenSinkFile   string
 	meta            map[string]string
 
+	awsAutoBearerToken bool
+	awsIncludeEntity   bool
+
 	enterpriseCmd
 }
 
@@ -57,6 +60,12 @@ func (c *cmd) init() {
 	c.flags.Var((*flags.FlagMapValue)(&c.meta), "meta",
 		"Metadata to set on the token, formatted as key=value. This flag "+
 			"may be specified multiple times to set multiple meta fields.")
+
+	c.flags.BoolVar(&c.awsAutoBearerToken, "aws-auto-bearer-token", false,
+		"Automatically discover AWS credentials, construct the bearer token, and login [aws-iam only]")
+
+	c.flags.BoolVar(&c.awsIncludeEntity, "aws-include-entity", false,
+		"Include a signed request to get the IAM role or IAM user in the bearer token [aws-iam only]")
 
 	c.initEnterpriseFlags()
 
@@ -89,21 +98,35 @@ func (c *cmd) Run(args []string) int {
 }
 
 func (c *cmd) bearerTokenLogin() int {
-	if c.bearerTokenFile == "" {
+	if c.awsAutoBearerToken {
+		if c.authMethodType != "aws-iam" {
+			c.UI.Error(fmt.Sprintf("Flags '-aws-auto-bearer-token' and '-aws-include-entity' are only supported for the 'aws-iam' auth method"))
+			return 1
+		}
+
+		if token, err := createAWSBearerToken(c.awsIncludeEntity); err != nil {
+			c.UI.Error(fmt.Sprintf("Error with AWS auth method: %s", err))
+		} else {
+			c.bearerToken = token
+		}
+	} else if c.awsIncludeEntity {
+		c.UI.Error(fmt.Sprintf("Flag '-aws-include-entity' requires '-aws-auto-bearer-token'"))
+		return 1
+	} else if c.bearerTokenFile == "" {
 		c.UI.Error(fmt.Sprintf("Missing required '-bearer-token-file' flag"))
 		return 1
-	}
+	} else {
+		data, err := ioutil.ReadFile(c.bearerTokenFile)
+		if err != nil {
+			c.UI.Error(err.Error())
+			return 1
+		}
+		c.bearerToken = strings.TrimSpace(string(data))
 
-	data, err := ioutil.ReadFile(c.bearerTokenFile)
-	if err != nil {
-		c.UI.Error(err.Error())
-		return 1
-	}
-	c.bearerToken = strings.TrimSpace(string(data))
-
-	if c.bearerToken == "" {
-		c.UI.Error(fmt.Sprintf("No bearer token found in %s", c.bearerTokenFile))
-		return 1
+		if c.bearerToken == "" {
+			c.UI.Error(fmt.Sprintf("No bearer token found in %s", c.bearerTokenFile))
+			return 1
+		}
 	}
 
 	// Ensure that we don't try to use a token when performing a login

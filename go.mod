@@ -15,6 +15,7 @@ require (
 	github.com/armon/go-metrics v0.3.10
 	github.com/armon/go-radix v1.0.0
 	github.com/aws/aws-sdk-go v1.42.34
+	github.com/aws/aws-sdk-go-v2 v1.14.0
 	github.com/coredns/coredns v1.1.2
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/digitalocean/godo v1.10.0 // indirect
@@ -25,7 +26,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.3.5
-	github.com/google/go-cmp v0.5.6
+	github.com/google/go-cmp v0.5.7
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/gofuzz v1.2.0
 	github.com/google/pprof v0.0.0-20210601050228-01bbb1931b22
@@ -43,7 +44,8 @@ require (
 	github.com/hashicorp/go-memdb v1.3.2
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-raftchunking v0.6.2
-	github.com/hashicorp/go-retryablehttp v0.6.7 // indirect
+	github.com/hashicorp/go-retryablehttp v0.6.7
+	github.com/hashicorp/go-secure-stdlib/strutil v0.1.2
 	github.com/hashicorp/go-sockaddr v1.0.2
 	github.com/hashicorp/go-syslog v1.0.0
 	github.com/hashicorp/go-uuid v1.0.2
