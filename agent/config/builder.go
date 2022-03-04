@@ -1979,7 +1979,7 @@ func (b *builder) tlsVersion(name string, v *string) types.TLSVersion {
 	a, err := tlsutil.ParseTLSVersion(*v)
 	if err != nil {
 		// TODO: should a warning for deprecated config values be surfaced here somehow?
-		b.err = multierror.Append(b.err, fmt.Errorf("%s: invalid tls version: %s", name, err))
+		b.err = multierror.Append(b.err, fmt.Errorf("%s: invalid TLS version: %s", name, err))
 	}
 	return a
 }
@@ -1992,7 +1992,7 @@ func (b *builder) tlsCipherSuites(name string, v *string) []types.TLSCipherSuite
 	var a []types.TLSCipherSuite
 	a, err := tlsutil.ParseCiphers(*v)
 	if err != nil {
-		b.err = multierror.Append(b.err, fmt.Errorf("%s: invalid tls cipher suites: %s", name, err))
+		b.err = multierror.Append(b.err, fmt.Errorf("%s: invalid TLS cipher suites: %s", name, err))
 	}
 	return a
 }
@@ -2490,7 +2490,7 @@ func (b *builder) buildTLSConfig(rt RuntimeConfig, t TLS) (tlsutil.Config, error
 		b.warn("tls.grpc was provided but TLS will NOT be enabled on the gRPC listener without an HTTPS listener configured (e.g. via ports.https)")
 	}
 
-	defaultTLSMinVersion := b.tlsMinVersion("tls.defaults.tls_min_version", t.Defaults.TLSMinVersion)
+	defaultTLSMinVersion := b.tlsVersion("tls.defaults.tls_min_version", t.Defaults.TLSMinVersion)
 	defaultCipherSuites := b.tlsCipherSuites("tls.defaults.tls_cipher_suites", t.Defaults.TLSCipherSuites)
 
 	mapCommon := func(name string, src TLSListener, dst *tlsutil.ListenerConfig) {
@@ -2510,7 +2510,7 @@ func (b *builder) buildTLSConfig(rt RuntimeConfig, t TLS) (tlsutil.Config, error
 		if src.TLSMinVersion == nil {
 			dst.TLSMinVersion = defaultTLSMinVersion
 		} else {
-			dst.TLSMinVersion = b.tlsMinVersion(
+			dst.TLSMinVersion = b.tlsVersion(
 				fmt.Sprintf("tls.%s.tls_min_version", name),
 				src.TLSMinVersion,
 			)
